@@ -16,3 +16,22 @@ I'm thinking recursion here because it's Advent of Code and that's what you do. 
 The container (representing an elf) will read the line in the file. If it's the end of the file, the container will write to a file in the storage account Day1.solution.txt. If it's any other line in the file, it will try to parse the line into a number and compare it with the max value so far that it was passed and pass the maximum of those values to start another container, then run an ARM deployment to deploy a container replacing itself with new values for the line and max value.
 
 This is going to make a lot of ARM deployments. I'm expecting a phone call.
+
+### Day 2
+Day 1 took a while to troubleshoot the random issues that can happen redeploying an ACI container 250+ times, and I couldn't think of any ideas for neat Azure tricks, so I just did an F#-only solution for Day2.
+
+### Day 3
+All of these are going to be doing a lot of line by line processing, but doing a container each is really slow and fragile, so I'm going to change this up a bit. This time I'll make a single container, but it will be connected to an Application Insights workspace and use the OpenTelemetry exporter to send the solution for each line as a metric.
+
+The chart shows the metrics, but I'll need to go to the logs to see the exact value.
+
+![Bar chart with sum of metrics](Day3.png)
+
+All the metrics are named "error-priority" so I can aggregate on that. After the metrics come in, I can find the answer with a kusto query:
+
+```
+customMetrics
+| where timestamp > ago(30m)
+| where name == "error-priority"
+| summarize sum(value)
+```
