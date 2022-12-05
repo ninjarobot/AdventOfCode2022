@@ -17,8 +17,15 @@ The container (representing an elf) will read the line in the file. If it's the 
 
 This is going to make a lot of ARM deployments. I'm expecting a phone call.
 
+#### Solution
+* [Farmer script to generate ARM deployment](Day1.fsx)
+* [Shell script (runs in an Azure container)](Day1.sh)
+
 ### Day 2
 Day 1 took a while to troubleshoot the random issues that can happen redeploying an ACI container 250+ times, and I couldn't think of any ideas for neat Azure tricks, so I just did an F#-only solution for Day2.
+
+#### Solution
+* [fsi script](Day2.fsx)
 
 ### Day 3
 All of these are going to be doing a lot of line by line processing, but doing a container each is really slow and fragile, so I'm going to change this up a bit. This time I'll make a single container, but it will be connected to an Application Insights workspace and use the OpenTelemetry exporter to send the solution for each line as a metric.
@@ -37,3 +44,8 @@ customMetrics
 ```
 
 The second part is roughly the same, but I'm using a new metric name - "badge-priority" - so I can differentiate the metrics from the two parts.
+
+#### Solution
+* [Farmer script to generate ARM deployment](Day3.fsx)
+* [fsi script that emits OTel metrics](Day3.Script.fsx)
+* [fsi script for part 2](Day3.ScriptPart2.fsx)
