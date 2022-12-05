@@ -35,3 +35,5 @@ customMetrics
 | where name == "error-priority"
 | summarize sum(value)
 ```
+
+The second part is roughly the same, but I'm using a new metric name - "badge-priority" - so I can differentiate the metrics from the two parts.
