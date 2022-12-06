@@ -49,3 +49,19 @@ The second part is roughly the same, but I'm using a new metric name - "badge-pr
 * [Farmer script to generate ARM deployment](Day3.fsx)
 * [fsi script that emits OTel metrics](Day3.Script.fsx)
 * [fsi script for part 2](Day3.ScriptPart2.fsx)
+
+### Day 4
+
+I'd like to scale out this one in a ridiculous way, so I'm going to make a shell script that can determine if there is overlap in a line and run a container per line. Then I'll sum up the number of healthy containers, which will be the ones that don't have any overlap.
+
+ACI isn't going to cut it because there are 1000 lines in my input and I can only run 60 instances per container group. Kubernetes will let me run a lot of containers in a pod and then show me how many are healthy.
+
+It will require a large AKS deployment YAML with each container getting a different line from my puzzle input, so I'll generate it.
+
+![Just the right amount of failed containers](Day4.png)
+
+As expected, many of the containers failed. Anywhere the line had overlap would exit, which means the count of running containers is the answer (582 for my input)!
+
+#### Solution
+* [fsi script to generate the AKS deployment and embed it in an ARM deployment](Day4.fsx)
+* [Shell script that runs in each AKS container and fails if the ranges overlap](Day4.sh)
