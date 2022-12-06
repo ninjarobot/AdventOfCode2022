@@ -64,4 +64,5 @@ As expected, many of the containers failed. Anywhere the line had overlap would 
 
 #### Solution
 * [fsi script to generate the AKS deployment and embed it in an ARM deployment](Day4.fsx)
-* [Shell script that runs in each AKS container and fails if the ranges overlap](Day4.sh)
+* [Part 1 shell script that runs in each AKS container and fails if the ranges fully overlap](Day4.sh)
+* [Part 2 shell script that runs in each AKS container and fails if the ranges overlap at all](Day4.Part2.sh)
