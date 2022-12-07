@@ -74,3 +74,7 @@ For this challenge, crates have to be moved from stack to stack while processing
 ![The answer is in the container build logs](Day5.png)
 
 This worked pretty well - the ACR build task churned through the Docker image build pretty quickly and you can see it work through the crate stacks by viewing the repository task history. Watching the build logs (ACR Task Run logs) was interesting as it moves the crates around. Since these are intermediate images instead of layers, the final image is perfectly valid (not nearing the 127 layer limit).
+
+#### Solution
+* [fsi script to process the crate data and instructions](Day5.Script.fsx)
+* [Farmer script to generate Dockerfile and ARM deployment](Day5.fsx)
