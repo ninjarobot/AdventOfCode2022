@@ -66,3 +66,11 @@ As expected, many of the containers failed. Anywhere the line had overlap would 
 * [fsi script to generate the AKS deployment and embed it in an ARM deployment](Day4.fsx)
 * [Part 1 shell script that runs in each AKS container and fails if the ranges fully overlap](Day4.sh)
 * [Part 2 shell script that runs in each AKS container and fails if the ranges overlap at all](Day4.Part2.sh)
+
+### Day 5
+
+For this challenge, crates have to be moved from stack to stack while processing each line. I thought it would be neat to make a docker image for each of these lines so that when the image is built, it modifies the stacks based on the state of the prior image by processing that line. Then an image is saved and the next image is based off that new image. There are ~500 lines of input, so this is going to take building a lot of intermediary images, but I think the limits on image are only on the layers in any given image, not the number of intermediary image. It will also be interesting to see how the Azure Container Registry handles building this one. We will see!
+
+![The answer is in the container build logs](Day5.png)
+
+This worked pretty well - the ACR build task churned through the Docker image build pretty quickly and you can see it work through the crate stacks by viewing the repository task history. Watching the build logs (ACR Task Run logs) was interesting as it moves the crates around. Since these are intermediate images instead of layers, the final image is perfectly valid (not nearing the 127 layer limit).
