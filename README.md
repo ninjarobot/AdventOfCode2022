@@ -78,3 +78,4 @@ This worked pretty well - the ACR build task churned through the Docker image bu
 #### Solution
 * [fsi script to process the crate data and instructions](Day5.Script.fsx)
 * [Farmer script to generate Dockerfile and ARM deployment](Day5.fsx)
+* [Generated Dockerfile](Day5.Dockerfile)
