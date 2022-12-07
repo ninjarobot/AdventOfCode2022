@@ -5,6 +5,8 @@ _Farmer Edition_
 
 I may regret this, but for this year's Advent of Code, I'm attempting to solve the problems using Farmer and deploying various cloud resources to solve the problem each day. This may go downhill really fast.
 
+To try these on your own, you'll need to copy your input data to a "data" subfolder, named for each day. For example, the input data for day 1 goes to `data/Day1.data.txt`. Then you can solve Day1 with `dotnet fsi Day1.fsx`. You will also need an Azure subscription to try these out, although in most cases you can replace `Farmer.Deploy.execute` with `Farmer.Writer.quickWrite` to just generate an ARM deployment file.
+
 ### Day 1
 I'll need to process each row from a file, which sounds like a job for quick little container instances (each is an elf). But I don't want to run a ton of them or I'll hit my quota and cost a lot of money. Since the file is static, I'm going to embed it in the template to be passed to each container so they don't need to deal with any centralized storage.
 
@@ -79,3 +81,32 @@ This worked pretty well - the ACR build task churned through the Docker image bu
 * [fsi script to process the crate data and instructions](Day5.Script.fsx)
 * [Farmer script to generate Dockerfile and ARM deployment](Day5.fsx)
 * [Generated Dockerfile](Day5.Dockerfile)
+
+### Day 6
+
+I need to find the first set of 4 distinct characters in a string. To do this I'm going to make use of a failure mode to weed out duplicates. I'll create a DNS zone for each group of characters, with a record for each character, so I can look in the portal UI and see the list of zones and records in each. The first one with all 4 address records is the "marker" that I need for the solution. A DNS Zone has 2 default records for the NS and SOA records, so I'll look for the first zone with 6 records.
+
+Lots of unexpected problems happened with this one. First the ARM deployment itself was too big:
+
+```json
+{"code": "RequestContentTooLarge", "message": "The request content size exceeds the maximum size of 4 MB."}
+```
+
+Then it had too many resources:
+
+```json
+{"code": "InvalidTemplate", "message": "Deployment template validation failed: 'The number of template resources limit exceeded. Limit: '800' and actual: '2187'. Please see https://aka.ms/arm-template/#resources for usage details.'.", "additionalInfo": [{"type": "TemplateViolation", "info": {"lineNumber": 0, "linePosition": 0, "path": ""}}]}
+```
+
+Then I hit the subscription quota limit on DNS Zones:
+
+```
+You have 259 zones of 250 allowed.
+```
+
+I gave up and looked for a resource that I could make lots of. I switched to deploying virtual networks instead since the quota is 25,000 (and they don't cost anything). I attempted to make a vnet named by the "marker" index for each slice of 14 characters with a subnet named for the 14 characters. If there are duplicate subnets, the vnet deployment fails, so I'll be able to take the first vnet that actually works. I chunked these into deployments with 150 vnets each. I expect all of them will fail because it requires all the resource deployments to succeed, so I'm ignoring the errors since I should eventually get a vnet out of one of the deployments.
+
+![The vnet name is the solution](Day6.png)
+
+#### Solution
+* [Farmer script to deploy ARM deployments for each chunk of vnets](Day6.fsx)
