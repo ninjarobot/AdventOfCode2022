@@ -110,3 +110,20 @@ I gave up and looked for a resource that I could make lots of. I switched to dep
 
 #### Solution
 * [Farmer script to deploy ARM deployments for each chunk of vnets](Day6.fsx)
+
+### Day 7
+
+This one required traversing command line history to reverse engineer a file system. This was somewhat standard to use recursion to sum up the files in directories and I couldn't think of a new solve this in an Azure deployment. I've been wanting to try out the new dotnet 7 Ahead of Time compilation, but I work on macOS and it's not supported, so I decided to do this on Azure to actually find the solution with a small native binary.
+
+1. Build a multistage dockerfile with the source embedded to do the build. You can't do AOT from a .fsx, so I needed a full project.
+2. Embed the dockerfile in an Azure `deploymentScripts` resource so it can be passed in an ARM template.
+3. Build the image in an Azure Container Registry.
+4. Deploy an Azure Container Group to run it and get the solution.
+
+I initially used `printfn` to output my solution, but this won't work on native AOT since it uses reflection, so I had to change that to use `System.Console.WriteLine`. The resulting binary was only 5.2 MB.
+
+![Small native binary](Day7.png)
+
+#### Solution
+* [Farmer script to generate a Dockerfile, build the image, and deploy to ACI](Day7.fsx)
+* [fsi script to actually solve the challenge (gets compiled to native during ARM deployment)](Day7.Script.fsx)
